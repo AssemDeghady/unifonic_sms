@@ -11,4 +11,12 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+
+  # Change these to a working account with Unifonic
+  config.before(:all) do
+    UnifonicSms.configure do |config|
+      config.api_key = "gNNWJSGUf4x8J3ftiZTCcgdesDmC8"
+      config.sender_phone = "966596666011"
+    end
+  end    
 end
