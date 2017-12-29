@@ -6,7 +6,7 @@ require "unifonic_sms/version"
 Gem::Specification.new do |spec|
   spec.name          = "unifonic_sms"
   spec.version       = UnifonicSms::VERSION
-  spec.required_ruby_version = '>= 2.4.2'
+  spec.required_ruby_version = '>= 2.3.0'
 
   spec.authors       = ["Assen Deghady"]
   spec.email         = ["assem.deghady@gmail.com"]
