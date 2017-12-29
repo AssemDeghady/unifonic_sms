@@ -11,9 +11,8 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Assen Deghady"]
   spec.email         = ["assem.deghady@gmail.com"]
 
-  spec.summary       = %q{Send SMS using Unifonic Api.}
-  # spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Send SMS messages using Unifonic Api.}
+  spec.homepage      = "https://github.com/AssemDeghady/unifonic_sms"
   spec.license       = "MIT"
 
   spec.files         = Dir['lib/**/*.rb']

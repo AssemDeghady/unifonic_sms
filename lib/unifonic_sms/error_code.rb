@@ -1,7 +1,10 @@
 module UnifonicSms
-  module ErrorCode
-    def self.get_error_code(error_code)
-      # Based on https://unifonic.docs.apiary.io/#reference/errors-list
+  module ErrorCode    
+    # Translates the error code returned by the Api call
+    # @see https://unifonic.docs.apiary.io/#reference/errors-list for references
+    #
+    # @param [String] error_code the error code recieved from response.
+    def self.get_error_code(error_code)      
       case error_code
         when "ER-01"
           {error: "Invalid AppSid", code: 1}
