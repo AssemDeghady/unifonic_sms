@@ -46,6 +46,31 @@ module UnifonicSms
     # @return [String] Url for Api Call. 
     def base_path (method_url)
       "/rest/#{method_url}"
+    end
+
+    def balance
+      # Initialize Request
+      http = Net::HTTP.new('api.unifonic.com', 80)
+      path = base_path("Messages/GetMessageIDStatus")
+      headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
+
+      # Add Body Parameters to request
+      body = "AppSid=#{api_key}"
+
+      # Send Call Request
+      response = http.post(path, body, headers)
+      response_body = JSON.parse(response.body)
+
+      if response.code.to_i == 200 && !response_body["data"].blank? 
+        return { balance: response_body["data"]["Balance"],
+                 currency_code: response_body["data"]["CurrencyCode"],
+                 shared_balance: response_body["data"]["SharedBalance"],
+                 code: 0 }
+      else
+        result = ErrorCode.get_error_code(response_body["errorCode"]) 
+
+        return result   
+      end         
     end 
 
     def send_message (phone, message, time_schedualed = nil)
