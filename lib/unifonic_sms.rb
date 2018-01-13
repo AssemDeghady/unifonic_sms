@@ -57,7 +57,7 @@ module UnifonicSms
     def balance
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Account/GetBalance")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
@@ -67,7 +67,7 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { balance: response_body["data"]["Balance"],
                  currency_code: response_body["data"]["CurrencyCode"],
                  shared_balance: response_body["data"]["SharedBalance"],
@@ -106,15 +106,15 @@ module UnifonicSms
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}&Recipient=#{recipient}&Body=#{message}"
-      body += "&SenderID=#{sender_phone}" unless sender_phone.blank? 
+      body += "&SenderID=#{sender_phone}" unless sender_phone.nil?
       body += '&Priority=High'
-      body += '&TimeScheduled=#{time_schedualed}' unless time_schedualed.blank?
+      body += '&TimeScheduled=#{time_schedualed}' unless time_schedualed.nil?
       
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { message_id: response_body["data"]["MessageID"], 
                  status: response_body["data"]["Status"], 
                  number_of_units: response_body["data"]["NumberOfUnits"],
@@ -173,14 +173,14 @@ module UnifonicSms
       end
 
       body += "&Body=#{message}"
-      body += "&SenderID=#{sender_phone}" unless sender_phone.blank? 
-      body += '&TimeScheduled=#{time_schedualed}' unless time_schedualed.blank?
+      body += "&SenderID=#{sender_phone}" unless sender_phone.nil?
+      body += '&TimeScheduled=#{time_schedualed}' unless time_schedualed.nil?
       
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { messages: response_body["data"]["Messages"], 
                   status: response_body["data"]["Status"], 
                   number_of_units: response_body["data"]["NumberOfUnits"],
@@ -217,8 +217,8 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
-        return { status: response_body["data"]["Status"], code: 0 }
+      if response.code.to_i == 200 && !response_body["Status"].nil? 
+        return { status: response_body["Status"], code: 0 }
       else
         result = ErrorCode.get_error_code(response_body["errorCode"]) 
 
@@ -242,28 +242,28 @@ module UnifonicSms
     def messages_report (date_from = nil, date_to = nil, status = nil, dlr = nil, country = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/GetMessagesReport")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}"
-      body += "&SenderID=#{sender_phone}" unless sender_phone.blank?
-      body += "&DateFrom=#{date_from}" unless date_from.blank?
-      body += "&DateTo=#{date_to}" unless date_to.blank?
-      body += "&Status=#{status}" unless status.blank?
-      body += "&DLR=#{dlr}" unless dlr.blank?
-      body += "&Country=#{country}" unless country.blank?
+      body += "&SenderID=#{sender_phone}" unless sender_phone.nil?
+      body += "&DateFrom=#{date_from}" unless date_from.nil?
+      body += "&DateTo=#{date_to}" unless date_to.nil?
+      body += "&Status=#{status}" unless status.nil?
+      body += "&DLR=#{dlr}" unless dlr.nil?
+      body += "&Country=#{country}" unless country.nil?
 
       
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
-        return { total_text_messages: response_body["data"]["TotalTextMessages"],
-                 number_of_units: response_body["data"]["NumberOfUnits"], 
-                 cost: response_body["data"]["Cost"],
-                 currency_code: response_body["data"]["CurrencyCode"],
+      if response.code.to_i == 200 && !response_body["TotalTextMessages"].nil? 
+        return { total_text_messages: response_body["TotalTextMessages"],
+                 number_of_units: response_body["NumberOfUnits"], 
+                 cost: response_body["Cost"],
+                 currency_code: response_body["CurrencyCode"],
                  code: 0 }
       else
         result = ErrorCode.get_error_code(response_body["errorCode"]) 
@@ -289,26 +289,26 @@ module UnifonicSms
     def messages_details (message_id = nil, date_from = nil, date_to = nil, status = nil, dlr = nil, country = nil, limit = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/GetMessagesDetails")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}"
-      body += "&MessageID=#{message_id}" unless message_id.blank?
-      body += "&SenderID=#{sender_phone}" unless sender_phone.blank?
-      body += "&DateFrom=#{date_from}" unless date_from.blank?
-      body += "&DateTo=#{date_to}" unless date_to.blank?
-      body += "&Status=#{status}" unless status.blank?
-      body += "&DLR=#{dlr}" unless dlr.blank?
-      body += "&Country=#{country}" unless country.blank?
-      body += "&Limit=#{limit}" unless limit.blank?
+      body += "&MessageID=#{message_id}" unless message_id.nil?
+      body += "&SenderID=#{sender_phone}" unless sender_phone.nil?
+      body += "&DateFrom=#{date_from}" unless date_from.nil?
+      body += "&DateTo=#{date_to}" unless date_to.nil?
+      body += "&Status=#{status}" unless status.nil?
+      body += "&DLR=#{dlr}" unless dlr.nil?
+      body += "&Country=#{country}" unless country.nil?
+      body += "&Limit=#{limit}" unless limit.nil?
 
       
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { total_text_messages: response_body["data"]["TotalTextMessages"],
                  page: response_body["data"]["Page"], 
                  messages: response_body["data"]["messages"],
@@ -334,24 +334,24 @@ module UnifonicSms
     def schedualed_messages (message_id = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/GetScheduled")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}"
-      body += "&MessageID=#{message_id}" unless message_id.blank?
+      body += "&MessageID=#{message_id}" unless message_id.nil?
 
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
-        return { message_id: response_body["data"]["MessageID"],
-                 message_body: response_body["data"]["MessageBody"], 
-                 sender_id: response_body["data"]["SenderID"],
-                 recipient: response_body["data"]["Recipient"],
-                 time_schedualed: response_body["data"]["TimeScheduled"],
-                 status: response_body["data"]["Status"],
+      if response.code.to_i == 200 
+        return { message_id: response_body["MessageID"],
+                 message_body: response_body["MessageBody"], 
+                 sender_id: response_body["SenderID"],
+                 recipient: response_body["Recipient"],
+                 time_schedualed: response_body["TimeScheduled"],
+                 status: response_body["Status"],
                  code: 0 }
       else
         result = ErrorCode.get_error_code(response_body["errorCode"]) 
@@ -369,7 +369,7 @@ module UnifonicSms
     def stop_schedualed_messages (message_id)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/StopScheduled")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
@@ -380,7 +380,7 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { success: response_body["Success"],
                  code: 0 }
       else
@@ -411,7 +411,7 @@ module UnifonicSms
     def keyword (number, keyword, rule, message = nil, webhook_url = nil, message_parameter = nil, recipient_parameter = nil, request_type = nil, resource_number = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/Keyword")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
@@ -419,19 +419,19 @@ module UnifonicSms
       body += "&Number=#{number}"
       body += "&Keyword=#{keyword}"
       body += "&Rule=#{rule}"
-      body += "&SenderID=#{sender_phone}" unless sender_phone.blank?
-      body += "&Message=#{message}" unless message.blank?
-      body += "&WebhookURL=#{webhook_url}" unless webhook_url.blank?
-      body += "&MessageParameter=#{message_parameter}" unless message_parameter.blank?
-      body += "&RecipientParameter=#{recipient_parameter}" unless recipient_parameter.blank?
-      body += "&RequestType =#{request_type}" unless request_type.blank?
-      body += "&ResourceNumber  =#{resource_number}" unless resource_number.blank?
+      body += "&SenderID=#{sender_phone}" unless sender_phone.nil?
+      body += "&Message=#{message}" unless message.nil?
+      body += "&WebhookURL=#{webhook_url}" unless webhook_url.nil?
+      body += "&MessageParameter=#{message_parameter}" unless message_parameter.nil?
+      body += "&RecipientParameter=#{recipient_parameter}" unless recipient_parameter.nil?
+      body += "&RequestType =#{request_type}" unless request_type.nil?
+      body += "&ResourceNumber  =#{resource_number}" unless resource_number.nil?
 
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { success: response_body["Success"],
                  code: 0 }
       else
@@ -459,21 +459,21 @@ module UnifonicSms
     def inbox (number, keyword = nil, date_from = nil, date_to = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/Inbox")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}"
       body += "&Number=#{number}"
-      body += "&Keyword=#{keyword}" unless keyword.blank?
-      body += "&FromDate=#{date_from}" unless date_from.blank?
-      body += "&ToDate=#{date_to}" unless date_to.blank?
+      body += "&Keyword=#{keyword}" unless keyword.nil?
+      body += "&FromDate=#{date_from}" unless date_from.nil?
+      body += "&ToDate=#{date_to}" unless date_to.nil?
 
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { number_of_messages: response_body["data"]["NumberOfMessages"],
                  message_from: response_body["data"]["MessageFrom"],
                  message: response_body["data"]["Message"],
@@ -500,18 +500,18 @@ module UnifonicSms
     def pricing (country_code = nil)
       # Initialize Request
       http = Net::HTTP.new('api.unifonic.com', 80)
-      path = base_path("Messages/GetMessageIDStatus")
+      path = base_path("Messages/Pricing")
       headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
 
       # Add Body Parameters to request
       body = "AppSid=#{api_key}"
-      body += "&CountryCode=#{country_code}" unless country_code.blank?
+      body += "&CountryCode=#{country_code}" unless country_code.nil?
 
       # Send Call Request
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].blank? 
+      if response.code.to_i == 200 && !response_body["data"].nil? 
         return { country: response_body["data"]["CountryCode"],
                  country_name: response_body["data"]["CountryName"],
                  code: 0 }

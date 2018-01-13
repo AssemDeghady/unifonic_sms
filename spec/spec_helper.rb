@@ -1,5 +1,6 @@
 require "bundler/setup"
 require "unifonic_sms"
+require 'webmock/rspec'
 
 RSpec.configure do |config|
   # Enable flags like --only-failures and --next-failure
@@ -14,6 +15,12 @@ RSpec.configure do |config|
 
   # Change these to a working account with Unifonic
   config.before(:all) do
+    @mock_test = true
+
+    if @mock_test
+      WebMock.disable_net_connect!(allow_localhost: true)
+    end
+
     UnifonicSms.configure do |config|
       config.api_key = "gNNWJSGUf4x8J3ftiZTCcgdesDmC8"
       config.sender_phone = "966596666011"
