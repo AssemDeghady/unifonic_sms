@@ -21,9 +21,18 @@ RSpec.configure do |config|
       WebMock.disable_net_connect!(allow_localhost: true)
     end
 
+    @test_recipent_number = "+012345954939"
+    @test_filtered_recipent_number = "12345954939"
+    @test_message_body = "Lorem Ipsum dolo, amet nakht"
+    @test_number = "12345678909"
+    @test_keyword = "google"
+    @test_role = "www.google.com"
+    @test_message_id = 48
+    @test_country_code = "KSA"
+
     UnifonicSms.configure do |config|
-      config.api_key = "gNNWJSGUf4x8J3ftiZTCcgdesDmC8"
-      config.sender_phone = "966596666011"
+      config.api_key = "gNNWJasdSKDMwkeopeoODMWowmdkWOImkm"
+      config.sender_phone = "9665966612331"
     end
   end    
 end

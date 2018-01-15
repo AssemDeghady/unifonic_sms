@@ -380,7 +380,7 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].nil? 
+      if response.code.to_i == 200
         return { success: response_body["Success"],
                  code: 0 }
       else
@@ -431,7 +431,7 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].nil? 
+      if response.code.to_i == 200 
         return { success: response_body["Success"],
                  code: 0 }
       else

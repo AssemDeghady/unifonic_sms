@@ -28,7 +28,7 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Account/GetBalance").
-          with(body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8"},
+          with(body: {"AppSid"=>"#{UnifonicSms.api_key}"},
               headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
           to_return(status: 200, 
                     body: {
@@ -57,10 +57,10 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Messages/Send").
-          with(body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8", 
-                      "Body"=>"https://www.questionpro.com/t/AN0XRZbIuJ", 
-                      "Priority"=>"High", "Recipient"=>"12345954939", 
-                      "SenderID"=>"966596666011"},
+          with(body: {"AppSid"=>"#{UnifonicSms.api_key}", 
+                      "Body"=>"#{@test_message_body}", 
+                      "Priority"=>"High", "Recipient"=>"#{@test_filtered_recipent_number}", 
+                      "SenderID"=>"#{UnifonicSms.sender_phone}"},
                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
           to_return(status: 200, 
                     body: { data: {
@@ -69,13 +69,13 @@ RSpec.describe UnifonicSms do
                             "NumberOfUnits"  => "1",
                             "Cost" => 0.4,
                             "Balance" => "100",
-                            "Recipient" => "12345954939",
+                            "Recipient" => "#{@test_filtered_recipent_number}",
                             "DateCreated" => "2014-07-22"
                           }}.to_json, 
                     headers: {'Content-Type'=>'application/json'})
       end
 
-      response = UnifonicSms.send_message("+012345954939", "https://www.questionpro.com/t/AN0XRZbIuJ")
+      response = UnifonicSms.send_message(@test_recipent_number, @test_message_body)
 
       expect(response[:message_id]).not_to be nil
     end
@@ -84,10 +84,10 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Messages/SendBulk").
-          with(body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8", 
-                      "Body"=>"https://www.questionpro.com/t/AN0XRZbIuJ", 
-                      "Recipient"=>"12345954939, 012345954939, 12345954939",
-                      "SenderID"=>"966596666011"},
+          with(body: {"AppSid"=>"#{UnifonicSms.api_key}", 
+                      "Body"=>"#{@test_message_body}", 
+                      "Recipient"=>"#{@test_number}, #{@test_number}, #{@test_number}",
+                      "SenderID"=>"#{UnifonicSms.sender_phone}"},
                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
           to_return(status: 200, 
                     body: { 
@@ -113,7 +113,7 @@ RSpec.describe UnifonicSms do
                     headers: {'Content-Type'=>'application/json'})
       end
 
-      response = UnifonicSms.send_bulk("+012345954939, 012345954939, 12345954939", "https://www.questionpro.com/t/AN0XRZbIuJ")
+      response = UnifonicSms.send_bulk("#{@test_number}, #{@test_number}, #{@test_number}", @test_message_body)
 
       expect(response[:cost]).not_to be nil
     end
@@ -122,14 +122,14 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Messages/GetMessageIDStatus")
-          .with( body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8", "MessageID"=>"6423"},
+          .with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "MessageID"=>"#{@test_message_id}"},
                  headers: {'Content-Type'=>'application/x-www-form-urlencoded'})
           .to_return(status: 200, 
                     body: {"Status" => "Sent"}.to_json, 
                     headers: {'Content-Type'=>'application/json'})
       end
 
-      response = UnifonicSms.message_status(6423)
+      response = UnifonicSms.message_status(@test_message_id)
 
       expect(response[:status]).not_to be nil
     end    
@@ -138,8 +138,8 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Messages/GetMessagesReport").
-          with( body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8",                      
-                      "SenderID"=>"966596666011"},
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}",                      
+                      "SenderID"=>"#{UnifonicSms.sender_phone}"},
                 headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
           to_return(status: 200, 
                     body: { "TotalTextMessages" => "150",
@@ -157,7 +157,7 @@ RSpec.describe UnifonicSms do
 
       if @mock_test
         stub_request(:post, "http://api.unifonic.com/rest/Messages/GetMessagesDetails").
-          with( body: {"AppSid"=>"gNNWJSGUf4x8J3ftiZTCcgdesDmC8", "SenderID"=>"966596666011"},
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "SenderID"=>"#{UnifonicSms.sender_phone}"},
                 headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
           to_return(status: 200, 
                     body: { 
@@ -208,6 +208,151 @@ RSpec.describe UnifonicSms do
 
       expect(response[:total_text_messages]).not_to be nil
     end            
+
+    it "Can get SMS Schedualed messages" do  
+
+      if @mock_test
+        stub_request(:post, "http://api.unifonic.com/rest/Messages/GetScheduled").
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}"},
+                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
+          to_return(status: 200, 
+                    body: {
+                            "MessageID" => "24",
+                            "MessageBody" => "test",
+                            "SenderID" => "123456",
+                            "Recipient" => "962795516342,962795516348",
+                            "TimeScheduled" => "2015-04-29 12:38:06",
+                            "Status" => "scheduled"                      
+                          }.to_json, 
+                    headers: {'Content-Type'=>'application/json'})
+      end
+
+      response = UnifonicSms.schedualed_messages
+
+      expect(response[:code]).to eq(0)
+    end  
+
+    it "Can stop SMS Schedualed messages" do  
+
+      if @mock_test
+        stub_request(:post, "http://api.unifonic.com/rest/Messages/StopScheduled").
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "MessageID"=>"#{@test_message_id}"},
+                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
+          to_return(status: 200, 
+                    body: {
+                            "success" => "true",
+                            "message" => "",
+                            "errorCode" => "ER-00",
+                            "data" => nil                    
+                          }.to_json, 
+                    headers: {'Content-Type'=>'application/json'})
+      end
+
+      response = UnifonicSms.stop_schedualed_messages(@test_message_id)
+
+      expect(response[:code]).to eq(0)
+    end 
+
+    it "Can create Keyword method enables you to manage your numbers" do  
+
+      if @mock_test
+        stub_request(:post, "http://api.unifonic.com/rest/Messages/Keyword").
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "Keyword"=>"#{@test_keyword}", 
+                        "Number"=>"#{@test_number}", "Rule"=>"#{@test_role}", "SenderID"=>"#{UnifonicSms.sender_phone}"},
+                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
+          to_return(status: 200, 
+                    body: { "success" => "true" }.to_json, 
+                    headers: {'Content-Type'=>'application/json'})
+      end
+
+      response = UnifonicSms.keyword(@test_number, @test_keyword, @test_role)
+
+      expect(response[:code]).to eq(0)
+    end 
+
+    it "Can create Retrieve all incoming messages" do  
+
+      if @mock_test
+        stub_request(:post, "http://api.unifonic.com/rest/Messages/Inbox").
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "Number"=>"#{@test_number}"},
+                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
+          to_return(status: 200, 
+                    body: { 
+                            "success" => "true",
+                            "message" => "",
+                            "errorCode" => "ER-00",
+                            data: {
+                              "NumberOfMessages" => 19,
+                              Messages: [
+                                {
+                                  "MessageFrom" => "+962795949563",
+                                  "Message" => "new",
+                                  "DateReceived" => "2015-09-15 13:40:56"
+                                },
+                                {
+                                  "MessageFrom" => "+962795949563",
+                                  "Message" => "Areen",
+                                  "DateReceived" => "2015-09-15 13:18:10"
+                                }
+                              ]
+                            }
+                          }.to_json, 
+                    headers: {'Content-Type'=>'application/json'})
+      end
+
+      response = UnifonicSms.inbox(@test_number)
+
+      expect(response[:code]).to eq(0)
+    end  
+
+    it "Can retrieve outbound messaging pricing for a given country" do  
+
+      if @mock_test
+        stub_request(:post, "http://api.unifonic.com/rest/Messages/Pricing").
+          with( body: {"AppSid"=>"#{UnifonicSms.api_key}", "CountryCode"=>"#{@test_country_code}"},
+                headers: {'Content-Type'=>'application/x-www-form-urlencoded'}).
+          to_return(status: 200, 
+                    body: { 
+                            "success" => "true",
+                            "message" => "",
+                            "errorCode" => "ER-00",
+                            data: {
+                              Jordan: {
+                                Orange: {
+                                  "CountryCode" => "JO",
+                                  "CountryPrefix" => "962",
+                                  "OperatorPrefix" => "77",
+                                  "MCC" => "416",
+                                  "MNC" => "77",
+                                  "Cost" => "0.02800"
+                                },
+                                Umnia: {
+                                  "CountryCode" => "JO",
+                                  "CountryPrefix" => "962",
+                                  "OperatorPrefix" => "78",
+                                  "MCC" => "416",
+                                  "MNC" => "3",
+                                  "Cost" => "0.02800"
+                                },
+                                Zain: {
+                                  "CountryCode" => "JO",
+                                  "CountryPrefix" => "962",
+                                  "OperatorPrefix" => "79",
+                                  "MCC" => "416",
+                                  "MNC" => "1",
+                                  "Cost" => "0.02800"
+                                }
+                              },
+                              "CurrencyCode" => "USD"
+                            }
+                          }.to_json, 
+                    headers: {'Content-Type'=>'application/json'})
+      end
+
+      response = UnifonicSms.pricing(@test_country_code)
+
+      expect(response[:code]).to eq(0)
+    end                 
 
   end
 
