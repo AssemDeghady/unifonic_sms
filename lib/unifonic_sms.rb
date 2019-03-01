@@ -114,7 +114,7 @@ module UnifonicSms
       response = http.post(path, body, headers)
       response_body = JSON.parse(response.body)
 
-      if response.code.to_i == 200 && !response_body["data"].nil? 
+      if (response.code.to_i == 200 || response.code.to_i == 201) && !response_body["data"].nil? 
         return { message_id: response_body["data"]["MessageID"], 
                  status: response_body["data"]["Status"], 
                  number_of_units: response_body["data"]["NumberOfUnits"],
